@@ -1,0 +1,402 @@
+<html>
+<head>
+    <title>Small 3D animation with menu</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <style>
+	html, body {
+		height: 100%;
+	}
+
+	body {
+		background-color: #000000;
+		margin: 0;
+		font-family: Helvetica, sans-serif;;
+		overflow: hidden;
+	}
+
+	a {
+		color: #ffffff;
+	}
+
+	#info {
+		position: absolute;
+		width: 100%;
+		color: #ffffff;
+		padding: 5px;
+		font-family: Monospace;
+		font-size: 13px;
+		font-weight: bold;
+		text-align: center;
+		z-index: 1;
+	}
+
+	#menu {
+		position: absolute;
+		bottom: 20px;
+		width: 100%;
+		text-align: center;
+	}
+        
+        .small_panel {
+		width: 1000px;
+		height: 600px;
+		box-shadow: 0px 0px 12px rgba(0,255,255,0.5);
+		border: 1px solid rgba(127,255,255,0.25);
+		text-align: center;
+		cursor: default;
+	}
+
+
+	.small_panel:hover {
+		box-shadow: 0px 0px 12px rgba(0,255,255,0.75);
+		border: 1px solid rgba(127,255,255,0.75);
+	}
+
+		.small_panel .title {
+			position: absolute;
+			top: 40px;
+			left: 0px;
+			right: 0px;
+			font-size: 60px;
+			font-weight: bold;
+			color: rgba(255,255,255,0.75);
+			text-shadow: 0 0 10px rgba(0,255,255,0.95);
+		}
+
+	.stats {
+		width: 1000px;
+		height: 600px;
+		box-shadow: 0px 0px 12px rgba(0,255,255,0.5);
+		border: 1px solid rgba(127,255,255,0.25);
+		text-align: center;
+		cursor: default;
+	}
+
+	.stats:hover {
+		box-shadow: 0px 0px 12px rgba(0,255,255,0.75);
+		border: 1px solid rgba(127,255,255,0.75);
+	}
+
+		.stats .title {
+			position: absolute;
+			top: 40px;
+			left: 0px;
+			right: 0px;
+			font-size: 60px;
+			font-weight: bold;
+			color: rgba(255,255,255,0.75);
+			text-shadow: 0 0 10px rgba(0,255,255,0.95);
+                        text-align: center;
+		}
+
+                .stats .exp_label {
+                	position: absolute;
+			top: 140px;
+			left: 40px;
+			right: 0px;
+			font-size: 40px;
+			font-weight: bold;
+			color: rgba(255,255,255,0.75);
+			text-shadow: 0 0 10px rgba(0,255,255,0.95);
+                        text-align: left;
+		}
+
+                .stats .pres_label {
+                	position: absolute;
+			top: 340px;
+			left: 40px;
+			right: 0px;
+			font-size: 40px;
+			font-weight: bold;
+			color: rgba(255,255,255,0.75);
+			text-shadow: 0 0 10px rgba(0,255,255,0.95);
+                        text-align: left;
+		}
+
+                .stats .bits_label {
+                	position: absolute;
+                        top: 520px;
+			left: 40px;
+			font-size: 40px;
+			font-weight: bold;
+			color: rgba(255,255,255,0.75);
+			text-shadow: 0 0 10px rgba(0,255,255,0.95);
+                        text-align: left;
+		}
+
+		.stats .details {
+			position: absolute;
+			bottom: 15px;
+			left: 0px;
+			right: 0px;
+			font-size: 12px;
+			color: rgba(127,255,255,0.75);
+		}
+
+	button {
+		color: rgba(127,255,255,0.75);
+		background: transparent;
+		outline: 1px solid rgba(127,255,255,0.75);
+		border: 0px;
+		padding: 5px 10px;
+		cursor: pointer;
+	}
+	button:hover {
+		background-color: rgba(0,255,255,0.5);
+	}
+	button:active {
+		color: #000000;
+		background-color: rgba(0,255,255,0.75);
+	}
+        .panel {
+                width: 3000px;
+                height: 600px;
+                box-shadow: 0px 0px 12px rgba(0,255,255,0.5);
+                border: 5px solid rgba(127,255,255,0.25);
+		text-align: left;
+		cursor: default;
+        }   
+		.panel .title {
+			position: absolute;
+			top: 40px;
+			left: 40px;
+			right: 0px;
+			font-size: 60px;
+			font-weight: bold;
+			color: rgba(255,255,255,0.75);
+			text-shadow: 0 0 10px rgba(0,255,255,0.95);
+		}
+
+		.panel .details {
+			position: absolute;
+			bottom: 15px;
+			left: 0px;
+			right: 0px;
+			font-size: 12px;
+			color: rgba(127,255,255,0.75);
+                }
+
+        </style>
+</head>
+<body>
+    <div id="container"></div>
+</body>
+<script src="three.js-master/build/three.js"></script>
+<script src="three.js-master/examples/js/renderers/CSS3DRenderer.js"></script>
+<script>
+    function init() {
+         // Set some camera attributes.
+        const VIEW_ANGLE = 75;
+        const ASPECT = window.innerWidth / window.innerHeight;
+        const NEAR = 1;
+        const FAR = 10000;
+
+        const RADIUS = 50;
+        const SEGMENTS = 32;
+        const RINGS = 16;
+
+        var render_info = {
+            mesh:           null,
+            sphere:         null,
+            camera:         null,
+            battle_menu:    null,
+            leader_board:   null,
+            equipment_stash:null,
+            stats_panel:    null,
+            renderer:       null,
+            renderer_css:   null,
+            container:      null,
+            pointLight:     null,
+            scene:          null
+        };
+
+        // Get the DOM element to attach to
+        render_info.container = document.querySelector('#container');
+
+        // Create a WebGL renderer, camera
+        // and a scene
+        render_info.renderer = new THREE.WebGLRenderer();
+        render_info.camera = new THREE.PerspectiveCamera(
+                                        VIEW_ANGLE,
+                                        ASPECT,
+                                        NEAR,
+                                        FAR
+                                        );
+        render_info.camera.position.z = 2000;
+
+        geometry = new THREE.BoxGeometry( 200, 200, 200 );
+        material = new THREE.MeshLambertMaterial( { color: 0x0000cc, wireframe: false } );
+        render_info.mesh = new THREE.Mesh(geometry, material);
+
+        sphereMaterial = new THREE.MeshLambertMaterial(
+                                        { color: 0xCC0000 }
+                                                      );
+        render_info.pointLight = new THREE.PointLight(0xFFFFFF);
+
+        // set the position of the light
+        render_info.pointLight.position.x = 350;
+        render_info.pointLight.position.y = 350;
+        render_info.pointLight.position.z = 700;
+
+        render_info.sphere = new THREE.Mesh(
+                            new THREE.SphereGeometry(
+                                            RADIUS,
+                                            SEGMENTS,
+                                            RINGS),
+                            sphereMaterial
+                                );
+
+        render_info.sphere.position.z = 500;
+        
+        // Configure the player statistics
+        var stats = document.createElement('div');
+        stats.className = 'stats';
+        stats.style.backgroundColor = 'rgba(255,255,255,' + (Math.random() *0.5+0.25)+')';
+
+        var stats_title = document.createElement('div');
+        stats_title.className = 'title';
+        stats_title.textContent = 'PLAYER STATISTICS';
+        stats.appendChild(stats_title);
+
+        var exp_label = document.createElement('div');
+        exp_label.className = 'exp_label';
+        exp_label.textContent = 'EXPERIENCE';
+        stats.appendChild(exp_label);
+
+        var bits_label = document.createElement('div');
+        bits_label.className = 'bits_label';
+        bits_label.textContent = 'BITS';
+        stats.appendChild(bits_label);
+
+        var pres_label = document.createElement('div');
+        pres_label.className = 'pres_label';
+        pres_label.textContent = 'PRESTIGE';
+        stats.appendChild(pres_label);
+
+        var stats_panel = new THREE.CSS3DObject(stats);
+        stats_panel.position.x = 2100;
+        stats_panel.position.y = -1150;
+        
+        // Configure the equipment stash
+        var equipment_panel = document.createElement('div');
+        equipment_panel.className = 'small_panel';
+        equipment_panel.style.backgroundColor = 'rgba(255,255,255,' + (Math.random() *0.5+0.25)+')';
+
+        var equipment_title = document.createElement('div');
+        equipment_title.className = 'title';
+        equipment_title.textContent = 'EQUIPMENT STASH';
+        equipment_panel.appendChild(equipment_title);
+
+        var equipment_stash = new THREE.CSS3DObject(equipment_panel);
+        equipment_stash.position.x = -2100;
+        equipment_stash.position.y = -1150;
+
+        // Configure the leader board
+        var leader_panel = document.createElement('div');
+        leader_panel.className = 'small_panel';
+        leader_panel.style.backgroundColor = 'rgba(255,255,255,' + (Math.random() *0.5+0.25)+')';
+
+        var leader_title = document.createElement('div');
+        leader_title.className = 'title';
+        leader_title.textContent = 'LEADERBOARD';
+        leader_panel.appendChild(leader_title);
+
+        var leader_board = new THREE.CSS3DObject(leader_panel);
+        leader_board.position.x = 2100;
+        leader_board.position.y = 1150;
+        
+        //Configure the battle menu
+        var battle_panel = document.createElement('div');
+        battle_panel.className = 'panel';
+        battle_panel.style.backgroundColor = 'rgba(255,255,255,' + (Math.random() *0.5+0.25)+')';
+
+        var battle_title = document.createElement('div');
+        battle_title.className = 'title';
+        battle_title.textContent = 'BATTLE MENU';
+        battle_panel.appendChild(battle_title);
+
+        var battle_menu = new THREE.CSS3DObject(battle_panel);
+        battle_menu.position.x = 0;
+        battle_menu.position.y = -1150;
+
+        render_info.scene = new THREE.Scene();
+
+        // Add the element to the scene
+        render_info.scene.add(equipment_stash);
+        render_info.scene.add(stats_panel);
+        render_info.scene.add(leader_board);
+        render_info.scene.add(battle_menu);
+
+        // Add the camera to the scene.
+        render_info.scene.add(render_info.camera);
+
+        // Add the mesh to the scene
+        render_info.scene.add(render_info.mesh);
+
+        // Add the sphere to the scene
+        render_info.scene.add(render_info.sphere); 
+
+        // Add the light to the scene
+        render_info.scene.add(render_info.pointLight);
+
+        // Start the renderer.
+        render_info.renderer.setSize(window.innerWidth, window.innerHeight);
+
+        render_info.renderer_css = new THREE.CSS3DRenderer();
+        render_info.renderer_css.setSize(window.innerWidth, window.innerHeight);
+        render_info.renderer_css.domElement.style.position = 'absolute';
+        document.getElementById('container').appendChild(render_info.renderer_css.domElement);
+
+        // Attach the renderer-supplied
+        // DOM element.
+        render_info.container.appendChild(render_info.renderer.domElement);   
+
+        // Update render_info
+        render_info.battle_menu = battle_menu;
+        render_info.leader_board = leader_board;
+        render_info.stats_panel = stats_panel;
+        render_info.battle_menu = battle_menu;
+
+        return render_info;
+    }
+
+    dx = 1;
+    dy = 1;
+    var render_info = {
+        mesh:           null,
+        sphere:         null,
+        camera:         null,
+        battle_menu:    null,
+        leader_board:   null,
+        equipment_stash:null,
+        stats_panel:    null,
+        renderer:       null,
+        renderer_css:   null,
+        container:      null,
+        pointLight:     null,
+        scene:          null
+    };
+
+    render_info = init();
+    animate();
+
+    function animate()
+    {
+        requestAnimationFrame(animate);
+        render_info.mesh.rotation.x += 0.01;
+        render_info.mesh.rotation.y += 0.01;
+        render_info.sphere.position.x = (render_info.sphere.position.x + dx);
+        render_info.sphere.position.y = (render_info.sphere.position.y + dy);
+        if (render_info.sphere.position.x > 700 || render_info.sphere.position.x < 0)
+        {
+            dx *= -1;
+        }
+        if (render_info.sphere.position.y > 700 || render_info.sphere.position.y < 0)
+        {
+            dy *= -1;
+        }
+        render_info.renderer.render(render_info.scene,render_info.camera);
+        render_info.renderer_css.render(render_info.scene,render_info.camera);
+    }
+</script>
